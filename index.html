@@ -2,9 +2,10 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Code Generator</title>
 
-<!-- Fonts -->
+<!-- Font -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <!-- Highlight.js -->
@@ -12,243 +13,232 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
-body {
-  background: linear-gradient(135deg, #0f0f0f, #020617);
-  color: white;
-  font-family: 'Inter', Arial;
-  margin: 0;
-  padding: 0;
+:root{
+  --bg:#020617;
+  --card:#0b1220;
+  --border:#1f2937;
+  --blue:#2563eb;
+  --green:#22c55e;
+  --red:#ef4444;
+  --text-muted:#9ca3af;
 }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 24px;
+body{
+  background:radial-gradient(circle at top,#020617,#000);
+  color:white;
+  font-family:'Inter',Arial;
+  margin:0;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:18px;
 }
 
-.subtitle {
-  text-align: center;
-  color: #9ca3af;
-  margin-bottom: 20px;
+header{
+  text-align:center;
+  margin-bottom:16px;
+}
+header h1{
+  margin:0;
+}
+header p{
+  color:var(--text-muted);
+  margin-top:6px;
 }
 
-.templates {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 16px;
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:12px;
 }
 
-.templates button {
-  background: #1f2937;
-  border: 1px solid #374151;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+.controls button{
+  background:var(--card);
+  color:white;
+  border:1px solid var(--border);
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
-.templates button:hover {
-  background: #2563eb;
+.controls button.active{
+  background:var(--blue);
 }
 
-.chat {
-  margin-bottom: 20px;
+.clear-btn{
+  background:var(--red);
+  border:none;
 }
 
-.user {
-  color: #4ade80;
-  margin: 10px 0;
+.chat{
+  margin-top:12px;
 }
 
-.bot {
-  background: #111827;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 12px;
-  animation: fadeIn 0.25s ease-in-out;
+.user{
+  color:#4ade80;
+  margin:10px 0;
 }
 
-.bot h4 {
-  margin: 0 0 6px 0;
-  color: #93c5fd;
+.bot{
+  background:var(--card);
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:14px;
+  animation:fade .25s ease-in-out;
 }
 
-.copy-btn {
-  float: right;
-  background: #2563eb;
-  border: none;
-  color: white;
-  padding: 4px 10px;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 12px;
+.bot p{
+  margin-top:0;
 }
 
-textarea {
-  width: 100%;
-  height: 90px;
-  background: #020617;
-  color: white;
-  border: 1px solid #1f2937;
-  padding: 12px;
-  border-radius: 10px;
-  resize: none;
+textarea{
+  width:100%;
+  height:80px;
+  background:#000;
+  color:white;
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:12px;
+  resize:none;
 }
 
-button.send {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background: #22c55e;
-  border: none;
-  color: black;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 10px;
+button.send{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  background:var(--green);
+  border:none;
+  color:black;
+  font-size:16px;
+  border-radius:12px;
 }
 
-/* Typing indicator */
-.bot.typing {
-  display: inline-flex;
-  gap: 6px;
+pre{
+  overflow-x:auto;
+  margin:0;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  background: #9ca3af;
-  border-radius: 50%;
-  animation: blink 1.4s infinite both;
+@media(max-width:600px){
+  textarea{height:70px;}
 }
 
-.dot:nth-child(2) { animation-delay: .2s; }
-.dot:nth-child(3) { animation-delay: .4s; }
-
-@keyframes blink {
-  0% { opacity: .2; }
-  20% { opacity: 1; }
-  100% { opacity: .2; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
 
 <body>
 <div class="container">
+
+<header>
   <h1>🤖 AI Code Generator</h1>
-  <div class="subtitle">أنشئ كود احترافي خلال ثواني</div>
+  <p>أنشئ كود نظيف واحترافي خلال ثواني</p>
+</header>
 
-  <!-- Templates -->
-  <div class="templates">
-    <button onclick="useTemplate('discord')">🤖 Discord Bot</button>
-    <button onclick="useTemplate('telegram')">📨 Telegram Bot</button>
-    <button onclick="useTemplate('api')">⚙️ API Server</button>
-  </div>
-
-  <div id="chat" class="chat"></div>
-
-  <textarea id="input" placeholder="اكتب طلبك هنا..."></textarea>
-  <button class="send" onclick="send()">إرسال</button>
+<div class="controls">
+  <button id="modeCode" class="active" onclick="setMode('code')">💻 كود فقط</button>
+  <button id="modeExplain" onclick="setMode('full')">🧠 شرح + كود</button>
+  <button class="clear-btn" onclick="clearChat()">🗑️ مسح</button>
 </div>
 
-<!-- Typing template -->
-<div id="typing-template" style="display:none;">
-  <div class="bot typing">
-    <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
-  </div>
+<div id="chat" class="chat"></div>
+
+<textarea id="input" placeholder="اكتب طلبك هنا..."></textarea>
+<button class="send" onclick="send()">إرسال</button>
+
 </div>
 
 <script>
 const BACKEND = "https://ai-genreting-code.up.railway.app/chat";
+const STORAGE_KEY = "ai_code_history";
+let mode = "code";
 
-function useTemplate(type) {
-  const input = document.getElementById("input");
-  if (type === "discord")
-    input.value = "اصنع لي بوت ديسكورد بايثون باستخدام discord.py مع أوامر أساسية";
-  if (type === "telegram")
-    input.value = "اصنع لي بوت تيليجرام بايثون باستخدام python-telegram-bot";
-  if (type === "api")
-    input.value = "اصنع لي REST API باستخدام FastAPI مع CRUD بسيط";
+/* ---------- MODE ---------- */
+function setMode(m){
+  mode = m;
+  document.getElementById("modeCode").classList.toggle("active", m==="code");
+  document.getElementById("modeExplain").classList.toggle("active", m==="full");
 }
 
-function showTyping(chat) {
-  chat.insertAdjacentHTML("beforeend", document.getElementById("typing-template").innerHTML);
-}
-
-function removeTyping(chat) {
-  const t = chat.querySelector(".typing");
-  if (t) t.remove();
-}
-
-function splitResponse(text) {
-  const match = text.match(/```[\s\S]*?```/);
-  return {
-    explanation: text.replace(/```[\s\S]*?```/, "").trim(),
-    code: match ? match[0].replace(/```/g, "") : ""
-  };
-}
-
-async function send() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
-  const message = input.value.trim();
-  if (!message) return;
-
-  chat.innerHTML += `<div class="user">🧑‍💻 ${message}</div>`;
-  input.value = "";
-  showTyping(chat);
-
-  try {
-    const res = await fetch(BACKEND, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ message })
-    });
-
-    const data = await res.json();
-    removeTyping(chat);
-
-    const parts = splitResponse(data.reply);
-    const id = "code_" + Date.now();
-
-    chat.innerHTML += `
-      <div class="bot">
-        <h4>🧠 الشرح</h4>
-        <div>${parts.explanation || "—"}</div>
-
-        <h4>💻 الكود</h4>
-        <button class="copy-btn" onclick="copyCode('${id}')">نسخ</button>
-        <pre><code id="${id}" class="language-python">${escapeHtml(parts.code)}</code></pre>
-      </div>
-    `;
-
-    hljs.highlightAll();
-  } catch (e) {
-    removeTyping(chat);
-    chat.innerHTML += `<div class="bot">❌ حصل خطأ</div>`;
+/* ---------- TYPEWRITER ---------- */
+function typeText(el, text, i=0){
+  if(i < text.length){
+    el.textContent += text.charAt(i);
+    setTimeout(()=>typeText(el,text,i+1), 6);
   }
 }
 
-function copyCode(id) {
-  navigator.clipboard.writeText(document.getElementById(id).innerText);
-  alert("✅ تم نسخ الكود");
+/* ---------- RESPONSE SPLIT ---------- */
+function splitResponse(text){
+  const match = text.match(/```[\s\S]*?```/);
+  return {
+    explanation: text.replace(/```[\s\S]*?```/, "").trim(),
+    code: match ? match[0].replace(/```/g,"") : text
+  };
 }
 
-function escapeHtml(text) {
-  return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+/* ---------- LOCAL STORAGE ---------- */
+function saveHistory(html){
+  let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  history.push(html);
+  history = history.slice(-5); // آخر 5 فقط
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
+
+function loadHistory(){
+  const chat = document.getElementById("chat");
+  const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  history.forEach(h => chat.insertAdjacentHTML("beforeend", h));
+}
+
+function clearChat(){
+  document.getElementById("chat").innerHTML = "";
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+/* ---------- SEND ---------- */
+async function send(){
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
+  const message = input.value.trim();
+  if(!message) return;
+
+  chat.innerHTML += `<div class="user">🧑‍💻 ${message}</div>`;
+  input.value = "";
+
+  const res = await fetch(BACKEND,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({message})
+  });
+
+  const data = await res.json();
+  const parts = splitResponse(data.reply);
+  const id = "c"+Date.now();
+
+  let html = `<div class="bot">`;
+  if(mode==="full"){
+    html += `<p>${parts.explanation}</p>`;
+  }
+  html += `<pre><code id="${id}" class="language-python"></code></pre></div>`;
+
+  chat.insertAdjacentHTML("beforeend", html);
+
+  const codeEl = document.getElementById(id);
+  typeText(codeEl, parts.code);
+  hljs.highlightAll();
+
+  saveHistory(html);
+}
+
+/* ---------- INIT ---------- */
+loadHistory();
 </script>
 
 </body>
