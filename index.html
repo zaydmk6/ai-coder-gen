@@ -96,7 +96,7 @@ async function send() {
   chat.innerHTML += `<div class="user">🧑‍💻 ${message}</div>`;
   input.value = "";
 
-  const res = await fetch("http://localhost:1000/chat", {
+  const res = await fetch("https://ai-genreting-code.up.railway.app/chat", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ message })
@@ -132,3 +132,4 @@ function escapeHtml(text) {
 
 </body>
 </html>
+
