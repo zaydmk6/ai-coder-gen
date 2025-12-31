@@ -4,74 +4,141 @@
 <meta charset="UTF-8">
 <title>AI Code Generator</title>
 
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <!-- Highlight.js -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
 body {
-  background:#0f0f0f;
-  color:white;
-  font-family: Arial;
-  margin:0;
-  padding:0;
+  background: linear-gradient(135deg, #0f0f0f, #020617);
+  color: white;
+  font-family: 'Inter', Arial;
+  margin: 0;
+  padding: 0;
 }
+
 .container {
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+  max-width: 900px;
+  margin: auto;
+  padding: 24px;
 }
+
 h1 {
-  text-align:center;
+  text-align: center;
+  margin-bottom: 10px;
 }
+
+.subtitle {
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+.templates {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.templates button {
+  background: #1f2937;
+  border: 1px solid #374151;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.templates button:hover {
+  background: #2563eb;
+}
+
 .chat {
-  margin-bottom:20px;
+  margin-bottom: 20px;
 }
+
 .user {
-  color:#4ade80;
-  margin:10px 0;
+  color: #4ade80;
+  margin: 10px 0;
 }
+
 .bot {
-  background:#111827;
-  border-radius:8px;
-  padding:15px;
-  position:relative;
+  background: #111827;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.25s ease-in-out;
 }
+
+.bot h4 {
+  margin: 0 0 6px 0;
+  color: #93c5fd;
+}
+
 .copy-btn {
-  position:absolute;
-  top:10px;
-  right:10px;
-  background:#2563eb;
-  border:none;
-  color:white;
-  padding:5px 10px;
-  cursor:pointer;
-  border-radius:5px;
-  font-size:12px;
+  float: right;
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 12px;
 }
+
 textarea {
-  width:100%;
-  height:90px;
-  background:#1f2937;
-  color:white;
-  border:none;
-  padding:10px;
-  border-radius:5px;
-  resize:none;
+  width: 100%;
+  height: 90px;
+  background: #020617;
+  color: white;
+  border: 1px solid #1f2937;
+  padding: 12px;
+  border-radius: 10px;
+  resize: none;
 }
+
 button.send {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:#22c55e;
-  border:none;
-  color:black;
-  font-size:16px;
-  cursor:pointer;
-  border-radius:5px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: #22c55e;
+  border: none;
+  color: black;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
 }
-pre {
-  overflow-x:auto;
+
+/* Typing indicator */
+.bot.typing {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: blink 1.4s infinite both;
+}
+
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+
+@keyframes blink {
+  0% { opacity: .2; }
+  20% { opacity: 1; }
+  100% { opacity: .2; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
@@ -79,14 +146,60 @@ pre {
 <body>
 <div class="container">
   <h1>🤖 AI Code Generator</h1>
+  <div class="subtitle">أنشئ كود احترافي خلال ثواني</div>
+
+  <!-- Templates -->
+  <div class="templates">
+    <button onclick="useTemplate('discord')">🤖 Discord Bot</button>
+    <button onclick="useTemplate('telegram')">📨 Telegram Bot</button>
+    <button onclick="useTemplate('api')">⚙️ API Server</button>
+  </div>
 
   <div id="chat" class="chat"></div>
 
-  <textarea id="input" placeholder="اكتب طلبك مثل: اصنع لي بوت ديسكورد بايثون"></textarea>
+  <textarea id="input" placeholder="اكتب طلبك هنا..."></textarea>
   <button class="send" onclick="send()">إرسال</button>
 </div>
 
+<!-- Typing template -->
+<div id="typing-template" style="display:none;">
+  <div class="bot typing">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</div>
+
 <script>
+const BACKEND = "https://ai-genreting-code.up.railway.app/chat";
+
+function useTemplate(type) {
+  const input = document.getElementById("input");
+  if (type === "discord")
+    input.value = "اصنع لي بوت ديسكورد بايثون باستخدام discord.py مع أوامر أساسية";
+  if (type === "telegram")
+    input.value = "اصنع لي بوت تيليجرام بايثون باستخدام python-telegram-bot";
+  if (type === "api")
+    input.value = "اصنع لي REST API باستخدام FastAPI مع CRUD بسيط";
+}
+
+function showTyping(chat) {
+  chat.insertAdjacentHTML("beforeend", document.getElementById("typing-template").innerHTML);
+}
+
+function removeTyping(chat) {
+  const t = chat.querySelector(".typing");
+  if (t) t.remove();
+}
+
+function splitResponse(text) {
+  const match = text.match(/```[\s\S]*?```/);
+  return {
+    explanation: text.replace(/```[\s\S]*?```/, "").trim(),
+    code: match ? match[0].replace(/```/g, "") : ""
+  };
+}
+
 async function send() {
   const input = document.getElementById("input");
   const chat = document.getElementById("chat");
@@ -95,42 +208,48 @@ async function send() {
 
   chat.innerHTML += `<div class="user">🧑‍💻 ${message}</div>`;
   input.value = "";
+  showTyping(chat);
 
-  const res = await fetch("https://ai-genreting-code.up.railway.app/chat", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ message })
-  });
+  try {
+    const res = await fetch(BACKEND, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ message })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
+    removeTyping(chat);
 
-  const codeId = "code_" + Date.now();
+    const parts = splitResponse(data.reply);
+    const id = "code_" + Date.now();
 
-  chat.innerHTML += `
-    <div class="bot">
-      <button class="copy-btn" onclick="copyCode('${codeId}')">نسخ</button>
-      <pre><code id="${codeId}" class="language-python">${escapeHtml(data.reply)}</code></pre>
-    </div>
-  `;
+    chat.innerHTML += `
+      <div class="bot">
+        <h4>🧠 الشرح</h4>
+        <div>${parts.explanation || "—"}</div>
 
-  hljs.highlightAll();
+        <h4>💻 الكود</h4>
+        <button class="copy-btn" onclick="copyCode('${id}')">نسخ</button>
+        <pre><code id="${id}" class="language-python">${escapeHtml(parts.code)}</code></pre>
+      </div>
+    `;
+
+    hljs.highlightAll();
+  } catch (e) {
+    removeTyping(chat);
+    chat.innerHTML += `<div class="bot">❌ حصل خطأ</div>`;
+  }
 }
 
 function copyCode(id) {
-  const code = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(code);
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
   alert("✅ تم نسخ الكود");
 }
 
 function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 </script>
 
 </body>
 </html>
-
-
